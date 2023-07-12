@@ -48,11 +48,9 @@ func Add(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
-	// user := r.URL.Query().Get("user")
-	user := r.PostForm
+	user := r.FormValue("user")
 	fmt.Printf("user: %s\n", user)
-	if user == nil {
-		// http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+	if user == "" {
 		res := AddRes{
 			Code:    "1",
 			Data:    false,
@@ -93,6 +91,6 @@ func main() {
 	router.GET("/", Index)
 	router.POST("/add", Add)
 
-	fmt.Println("server is running at 5505...")
+	fmt.Println("server is running at 5501...")
 	log.Fatal(http.ListenAndServe(":5501", router))
 }
