@@ -113,11 +113,6 @@ func callbackGithub(c *gin.Context) {
 
 	fmt.Println("userInfo: ", userInfo)
 
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"code":     "0",
-	// 	"message":  "success",
-	// 	"userInfo": userInfo,
-	// })
 	c.SetCookie("username", "dilireba", 60*60*24, "/", "localhost:3001.", false, true)
 	c.SetCookie("age", "18", 60*60*24, "/", "localhost:3001.", false, true)
 
