@@ -6,41 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    <button class="btn1">发送get请求</button>
-    <button class="btn2">发送post请求</button>
-    <script>
-        function queryParse(query){
-            let queryText = "";
-            for(let key in query){
-                queryText += `${key}=${query[key]}&`;
-                }
-            return queryText.slice(0,-1);
-        }
-
-        const btn1 = document.querySelector('.btn1')
-        const btn2 = document.querySelector('.btn2')
-
-        btn1.onclick = function() {
-            fetch('http://127.0.0.1:5501/test')
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(err => console.log(err))
-        }
-
-        btn2.onclick = function() {
-            fetch('http://127.0.0.1:5501/test', {
-                method: 'post',
-                // headers: {
-                //     "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-                // },
-                // body: queryParse({
-                //     user: 'dilireba'
-                // }),
-            })
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(err => console.log(err))
-        }
-    </script>
+    <a href="/"></a>
 </body>
 </html>
