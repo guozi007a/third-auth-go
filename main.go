@@ -12,10 +12,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type UserInfo struct {
+	Login      string `json:"login"`
+	Avatar_url string `json:"avatar_url"`
+}
+
 var client_id = "95a6cf45f087a9b6dbe2"
 var client_secret = "7efaeec759e2eede82a05d37dd1c33196443c9f8"
 var redirect_uri = "http://localhost:3001/callback/github"
-var homePage = "http://localhost:3001"
+var homePage = "http://localhost:3001?login=true"
 var authState = "big_deal"
 
 func main() {
@@ -31,6 +36,7 @@ func main() {
 	r.GET("/login/github", loginGithub)
 	r.GET("/callback/github", callbackGithub)
 	r.GET("/user", User)
+	r.GET("/logout", Logout)
 
 	r.Run(":5501")
 }
@@ -108,28 +114,62 @@ func callbackGithub(c *gin.Context) {
 	}
 	defer respUserInfo.Body.Close()
 	bodyBytesUserInfo, _ := ioutil.ReadAll(respUserInfo.Body)
-	var userInfo map[string]interface{}
-	json.Unmarshal(bodyBytesUserInfo, &userInfo)
+
+	var userInfo UserInfo
+
+	infoErr := json.Unmarshal(bodyBytesUserInfo, &userInfo)
+
+	if infoErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    "04",
+			"message": "解析失败",
+		})
+		return
+	}
 
 	fmt.Println("userInfo: ", userInfo)
 
-	c.SetCookie("username", "dilireba", 60*60*24, "/", "localhost:3001.", false, true)
-	c.SetCookie("age", "18", 60*60*24, "/", "localhost:3001.", false, true)
+	c.SetCookie("username", userInfo.Login, 60*60*24, "/", "localhost:3001.", false, true)
+	c.SetCookie("avatar_url", userInfo.Avatar_url, 60*60*24, "/", "localhost:3001.", false, true)
 
 	c.Redirect(http.StatusMovedPermanently, homePage)
 }
 
 func User(c *gin.Context) {
 	username, _ := c.Cookie("username")
-	age, _ := c.Cookie("age")
+	avatar_url, _ := c.Cookie("avatar_url")
 
 	fmt.Println("username: ", username)
-	fmt.Println("age: ", age)
+	fmt.Println("avatar_url: ", avatar_url)
+
+	if username == "" || avatar_url == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    "0",
+			"message": "success",
+			"data":    "",
+		})
+		return
+	}
+
+	data := map[string]interface{}{
+		"username":   username,
+		"avatar_url": avatar_url,
+	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"code":     "0",
-		"message":  "success",
-		"username": username,
-		"age":      age,
+		"code":    "0",
+		"message": "success",
+		"data":    data,
+	})
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie("username", "", -1, "/", "", false, true)
+	c.SetCookie("avatar_url", "", -1, "/", "", false, true)
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    "0",
+		"message": "success",
+		"data":    true,
 	})
 }
