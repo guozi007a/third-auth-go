@@ -1,6 +1,6 @@
 package third
 
-var homePage = "http://localhost:3001?login=true"
+var homePage = "http://localhost:3001"
 var authState = "big_deal"
 var MAX_AGE = 60 * 60 * 24
 var Cookie_Host = "localhost:3001."

@@ -5,6 +5,8 @@ import (
 
 	"third-auth-go/third"
 
+	"third-auth-go/utils"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +39,9 @@ func User(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"code":    "0",
 			"message": "success",
-			"data":    "",
+			"data": map[string]interface{}{
+				"access": false,
+			},
 		})
 		return
 	}
@@ -45,6 +49,7 @@ func User(c *gin.Context) {
 	data := map[string]interface{}{
 		"username":   username,
 		"avatar_url": avatar_url,
+		"access":     utils.Includes(third.WhiteList, username),
 	}
 
 	c.JSON(http.StatusOK, gin.H{
